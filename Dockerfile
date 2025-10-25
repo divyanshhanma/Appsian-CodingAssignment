@@ -2,13 +2,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copy the entire backend project from the root of the cloned repository
-# Assuming the repo is cloned to /opt/render/project/src and then root directory is relative to that
-# We explicitly copy the entire Backend project into the WORKDIR of the Docker image
-COPY MiniProjectManager/Backend/MiniProjectManager.Api/ . 
+# Copy the backend project file from the repo root
+COPY MiniProjectManager/Backend/MiniProjectManager.Api/MiniProjectManager.Api.csproj MiniProjectManager.Api/
+WORKDIR /app/MiniProjectManager.Api
+RUN dotnet restore
 
-# Restore dependencies
-RUN dotnet restore "MiniProjectManager.Api.csproj"
+# Copy the rest of the backend source code
+COPY MiniProjectManager/Backend/MiniProjectManager.Api/. .
 
 # Publish the application
 RUN dotnet publish -c Release -o /app/publish

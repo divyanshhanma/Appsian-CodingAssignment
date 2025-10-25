@@ -1,0 +1,53 @@
+.task-form-container {
+  margin-bottom: 30px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.task-form-container input[type="text"] {
+  flex-grow: 1;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 1em;
+  color: var(--text-color);
+  background-color: var(--card-bg);
+}
+
+.task-form-container input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2); /* Light blue shadow */
+}
+
+.task-form-container button {
+  padding: 12px 20px;
+  font-size: 1em;
+  font-weight: 600;
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.task-form-container button:hover {
+  background-color: #005A9E; /* Darker blue for hover */
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .task-form-container input[type="text"] {
+    color: var(--text-color);
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+  }
+  .task-form-container input[type="text"]:focus {
+    box-shadow: 0 0 0 2px rgba(78, 168, 222, 0.2); /* Light blue shadow for dark mode */
+  }
+  .task-form-container button:hover {
+    background-color: #357ABD; /* Darker blue for hover in dark mode */
+  }
+}

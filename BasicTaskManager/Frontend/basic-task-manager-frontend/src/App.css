@@ -1,0 +1,84 @@
+.app-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.app-container h1 {
+  margin-bottom: 30px;
+  color: var(--primary-color);
+}
+
+.error-message {
+  color: var(--danger-color);
+  font-size: 0.9em;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-buttons {
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.filter-buttons button {
+  padding: 10px 20px;
+  font-size: 0.95em;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  background-color: #f0f4f7; /* Light neutral background for inactive */
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-buttons button:hover:not(.active) {
+  background-color: #e0e6eb;
+  border-color: #c9d2d9;
+}
+
+.filter-buttons button.active {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  border-color: var(--primary-color);
+  font-weight: 700;
+}
+
+.filter-buttons button.active:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .app-container {
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  .app-container h1 {
+    color: var(--primary-color);
+  }
+
+  .filter-buttons button {
+    background-color: #37474f; /* Dark neutral for inactive in dark mode */
+    border-color: #546e7a;
+    color: var(--text-color);
+  }
+
+  .filter-buttons button:hover:not(.active) {
+    background-color: #4a6572;
+    border-color: #607d8b;
+  }
+
+  .filter-buttons button.active {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border-color: var(--primary-color);
+  }
+}

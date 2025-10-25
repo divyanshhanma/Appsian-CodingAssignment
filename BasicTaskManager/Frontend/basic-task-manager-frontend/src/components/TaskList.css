@@ -1,0 +1,18 @@
+.task-list {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.task-list p.no-tasks {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  margin-top: 30px;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .task-list p.no-tasks {
+    color: #bbb;
+  }
+}

@@ -1,10 +1,11 @@
 # Use the official .NET SDK image to build the application
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /src/MiniProjectManager.Api # Working directory inside the container for the project
 
-# Copy the backend project file from the repo root
-COPY MiniProjectManager/Backend/MiniProjectManager.Api/MiniProjectManager.Api.csproj MiniProjectManager.Api/
-WORKDIR /app/MiniProjectManager.Api
+# Copy the project file and any NuGet config files, then restore as a separate layer
+# This optimizes Docker caching: if only source code changes, restore doesn't rerun
+COPY MiniProjectManager/Backend/MiniProjectManager.Api/*.csproj .
+COPY MiniProjectManager/Backend/MiniProjectManager.Api/nuget.config . # If you have one
 RUN dotnet restore
 
 # Copy the rest of the backend source code

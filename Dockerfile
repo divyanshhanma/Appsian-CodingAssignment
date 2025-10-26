@@ -1,21 +1,20 @@
-# Use the official .NET SDK image to build the application
+# Stage 1: Build the .NET application
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src/app # Work in a clean directory
+WORKDIR /app/MiniProjectManager/Backend/MiniProjectManager.Api # Set WORKDIR directly to the project folder inside the container
 
-# Copy the .csproj file
-COPY MiniProjectManager/Backend/MiniProjectManager.Api/*.csproj ./MiniProjectManager.Api/
+# Copy only the .csproj file first to leverage Docker cache
+COPY MiniProjectManager/Backend/MiniProjectManager.Api/MiniProjectManager.Api.csproj .
 
 # Restore dependencies
-# Restore directly on the solution/project file.
-RUN dotnet restore "./MiniProjectManager.Api/MiniProjectManager.Api.csproj"
+RUN dotnet restore
 
 # Copy the rest of the backend source code
-COPY MiniProjectManager/Backend/MiniProjectManager.Api/. ./MiniProjectManager.Api/
+COPY MiniProjectManager/Backend/MiniProjectManager.Api/. .
 
 # Publish the application
-RUN dotnet publish "./MiniProjectManager.Api/MiniProjectManager.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish
 
-# Use the official .NET ASP.NET runtime image to run the application
+# Stage 2: Create the runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 

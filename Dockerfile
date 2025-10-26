@@ -5,7 +5,7 @@ WORKDIR /src/MiniProjectManager.Api # Working directory inside the container for
 # Copy the project file and any NuGet config files, then restore as a separate layer
 # This optimizes Docker caching: if only source code changes, restore doesn't rerun
 COPY MiniProjectManager/Backend/MiniProjectManager.Api/*.csproj .
-COPY MiniProjectManager/Backend/MiniProjectManager.Api/nuget.config . # If you have one
+# COPY MiniProjectManager/Backend/MiniProjectManager.Api/nuget.config . # If you have one - REMOVED, as it does not exist
 RUN dotnet restore
 
 # Copy the rest of the backend source code

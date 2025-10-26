@@ -7,6 +7,7 @@ using MiniProjectManager.Api.Repositories;
 using MiniProjectManager.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL; // Added for PostgreSQL
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,15 +17,25 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     var env = builder.Environment;
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+    // Ensure the connection string is not null or empty
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException("Database connection string 'DefaultConnection' is not configured.");
+    }
+
+    // Use NpgsqlConnectionStringBuilder to handle both URL-style and key-value pair connection strings
+    var npgsqlBuilder = new NpgsqlConnectionStringBuilder(connectionString);
+    var formattedConnectionString = npgsqlBuilder.ConnectionString; // This will normalize the string
+
     if (env.IsDevelopment())
     {
         // Use SQLite for local development
-        options.UseSqlite(connectionString);
+        options.UseSqlite(formattedConnectionString); // Should not happen for SQLite but for consistency
     }
     else
     {
         // Use PostgreSQL for production (e.g., Render)
-        options.UseNpgsql(connectionString);
+        options.UseNpgsql(formattedConnectionString);
     }
 });
 

@@ -2,14 +2,20 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy the entire repository into /src
-COPY . .
+# Copy the API project file first (for dotnet restore caching)
+COPY MiniProjectManager/Backend/MiniProjectManager.Api/MiniProjectManager.Api.csproj ./MiniProjectManager/Backend/MiniProjectManager.Api/
 
-# Change to the API project directory for dotnet commands
+# Copy the rest of the MiniProjectManager backend source code
+COPY MiniProjectManager/Backend/MiniProjectManager.Api/. ./MiniProjectManager/Backend/MiniProjectManager.Api/
+
+# Change directory to the API project
 WORKDIR /src/MiniProjectManager/Backend/MiniProjectManager.Api
 
 # Restore dependencies for the specific project
 RUN dotnet restore "MiniProjectManager.Api.csproj"
+
+# Explicitly add Npgsql package (as a failsafe, given persistent errors)
+RUN dotnet add "MiniProjectManager.Api.csproj" package Npgsql.EntityFrameworkCore.PostgreSQL --version 8.0.0
 
 # Publish the application to an absolute path /publish at the root of the build stage container
 RUN dotnet publish "MiniProjectManager.Api.csproj" -c Release -o /publish

@@ -44,8 +44,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         // Use NpgsqlConnectionStringBuilder to handle both URL-style and key-value pair connection strings
         // This is crucial for Render's postgresql:// format
         Console.WriteLine($"Attempting to parse connection string: {connectionString}"); // Add this line for debugging
-        var npgsqlBuilder = new NpgsqlConnectionStringBuilder(connectionString);
-        var formattedConnectionString = npgsqlBuilder.ConnectionString; // This will normalize the string
+
+        // IMPORTANT: Convert the postgresql:// URI to a standard key-value pair connection string
+        // Npgsql.NpgsqlConnection.Parse() is specifically designed for this.
+        var parsedConnectionStringBuilder = Npgsql.NpgsqlConnection.Parse(connectionString);
+        string formattedConnectionString = parsedConnectionStringBuilder.ConnectionString;
+
         options.UseNpgsql(formattedConnectionString);
     }
 });

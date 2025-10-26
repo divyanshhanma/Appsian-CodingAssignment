@@ -15,26 +15,36 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var env = builder.Environment;
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-    // Ensure the connection string is not null or empty
-    if (string.IsNullOrWhiteSpace(connectionString))
-    {
-        throw new InvalidOperationException("Database connection string 'DefaultConnection' is not configured.");
-    }
-
-    // Use NpgsqlConnectionStringBuilder to handle both URL-style and key-value pair connection strings
-    var npgsqlBuilder = new NpgsqlConnectionStringBuilder(connectionString);
-    var formattedConnectionString = npgsqlBuilder.ConnectionString; // This will normalize the string
+    string connectionString;
 
     if (env.IsDevelopment())
     {
-        // Use SQLite for local development
-        options.UseSqlite(formattedConnectionString); // Should not happen for SQLite but for consistency
+        // For local development, get from appsettings (which can be SQLite)
+        connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException("Development database connection string 'DefaultConnection' is not configured.");
+        }
+        options.UseSqlite(connectionString);
     }
     else
     {
-        // Use PostgreSQL for production (e.g., Render)
+        // For production, try to get from DATABASE_URL environment variable first (common for Render)
+        connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            // Fallback to GetConnectionString("DefaultConnection") if DATABASE_URL is not set directly
+            connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException("Production database connection string 'DATABASE_URL' or 'DefaultConnection' is not configured.");
+            }
+        }
+
+        // Use NpgsqlConnectionStringBuilder to handle both URL-style and key-value pair connection strings
+        // This is crucial for Render's postgresql:// format
+        var npgsqlBuilder = new NpgsqlConnectionStringBuilder(connectionString);
+        var formattedConnectionString = npgsqlBuilder.ConnectionString; // This will normalize the string
         options.UseNpgsql(formattedConnectionString);
     }
 });

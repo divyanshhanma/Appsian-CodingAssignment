@@ -29,7 +29,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
     else
     {
-        // For production, try to get from DATABASE_URL environment variable first (common for Render)
+        // Use PostgreSQL for production (e.g., Render)
         connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
         if (string.IsNullOrWhiteSpace(connectionString))
         {
@@ -41,14 +41,27 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             }
         }
 
-        // Use NpgsqlConnectionStringBuilder to handle both URL-style and key-value pair connection strings
-        // This is crucial for Render's postgresql:// format
-        Console.WriteLine($"Attempting to parse connection string: {connectionString}"); // Add this line for debugging
+        // Manually parse the postgresql:// URI to construct a key-value pair connection string
+        // This bypasses Npgsql.NpgsqlConnection.Parse() which seems to be problematic in this environment.
+        Uri uri = new Uri(connectionString);
+        string db = uri.AbsolutePath.TrimStart('/');
+        string user = uri.UserInfo.Split(':')[0];
+        string passwd = uri.UserInfo.Split(':')[1];
+        string host = uri.Host;
+        int port = uri.Port > 0 ? uri.Port : 5432; // Default PostgreSQL port
 
-        // IMPORTANT: Convert the postgresql:// URI to a standard key-value pair connection string
-        // Npgsql.NpgsqlConnection.Parse() is specifically designed for this.
-        var parsedConnectionStringBuilder = Npgsql.NpgsqlConnection.Parse(connectionString);
-        string formattedConnectionString = parsedConnectionStringBuilder.ConnectionString;
+        var npgsqlBuilder = new NpgsqlConnectionStringBuilder
+        {
+            Host = host,
+            Port = port,
+            Database = db,
+            Username = user,
+            Password = passwd,
+            Pooling = true, // Enable connection pooling
+            SslMode = SslMode.Prefer, // Use SslMode.Prefer or SslMode.Require if your Render DB requires it
+            TrustServerCertificate = true // Trust server certificate (important for self-signed or certain environments)
+        };
+        string formattedConnectionString = npgsqlBuilder.ConnectionString;
 
         options.UseNpgsql(formattedConnectionString);
     }

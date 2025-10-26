@@ -100,7 +100,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") // React app's default Vite port
+            policy.WithOrigins("http://localhost:5173", "https://appsian-coding-assignment-qlccolkdh-dvs-projects-baca0d15.vercel.app") // React app's default Vite port and Vercel URL
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });

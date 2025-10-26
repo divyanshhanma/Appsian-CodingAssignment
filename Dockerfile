@@ -2,17 +2,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy the entire backend project directory into the container's /src
-COPY MiniProjectManager/Backend/MiniProjectManager.Api ./MiniProjectManager.Api/
+# Copy the entire backend API project directory into the container's /src
+COPY MiniProjectManager/Backend/MiniProjectManager.Api ./MiniProjectManager.Api
 
-# Change working directory to the project directory for build operations
-WORKDIR /src/MiniProjectManager.Api
+# Restore dependencies for the specific project
+RUN dotnet restore "MiniProjectManager.Api/MiniProjectManager.Api.csproj"
 
-# Restore dependencies
-RUN dotnet restore
-
-# Publish the application
-RUN dotnet publish -c Release -o /app/publish
+# Publish the application, explicitly referencing the project path
+RUN dotnet publish "MiniProjectManager.Api/MiniProjectManager.Api.csproj" -c Release -o /app/publish
 
 # Use the official .NET ASP.NET runtime image to run the application
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final

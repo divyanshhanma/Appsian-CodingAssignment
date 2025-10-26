@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5208/api'; // Backend API base URL
+const API_BASE_URL = "https://appsian-codingassignment.onrender.com/api"; // Updated for Render deployment
 
 const api = axios.create({
   baseURL: API_BASE_URL,

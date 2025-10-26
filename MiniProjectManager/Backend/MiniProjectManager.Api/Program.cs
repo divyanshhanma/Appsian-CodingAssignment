@@ -59,7 +59,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             Password = passwd,
             Pooling = true, // Enable connection pooling
             SslMode = SslMode.Prefer, // Use SslMode.Prefer or SslMode.Require if your Render DB requires it
-            TrustServerCertificate = true // Trust server certificate (important for self-signed or certain environments)
+            // TrustServerCertificate = true // This parameter is obsolete and no longer needed
         };
         string formattedConnectionString = npgsqlBuilder.ConnectionString;
 

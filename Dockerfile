@@ -1,25 +1,25 @@
 # Stage 1: Build the .NET application
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app/MiniProjectManager/Backend/MiniProjectManager.Api # Set WORKDIR directly to the project folder inside the container
+WORKDIR /src
 
-# Copy only the .csproj file first to leverage Docker cache
-COPY MiniProjectManager/Backend/MiniProjectManager.Api/MiniProjectManager.Api.csproj .
+# Copy the entire repository into /src
+COPY . .
 
-# Restore dependencies
-RUN dotnet restore
+# Change to the API project directory for dotnet commands
+WORKDIR /src/MiniProjectManager/Backend/MiniProjectManager.Api
 
-# Copy the rest of the backend source code
-COPY MiniProjectManager/Backend/MiniProjectManager.Api/. .
+# Restore dependencies for the specific project
+RUN dotnet restore "MiniProjectManager.Api.csproj"
 
-# Publish the application
-RUN dotnet publish -c Release -o /app/publish
+# Publish the application to an absolute path /publish at the root of the build stage container
+RUN dotnet publish "MiniProjectManager.Api.csproj" -c Release -o /publish
 
 # Stage 2: Create the runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Copy the published output from the build stage
-COPY --from=build /app/publish .
+# Copy the published output from the build stage's absolute path /publish
+COPY --from=build /publish .
 
 # Expose the port your API runs on
 EXPOSE 8080

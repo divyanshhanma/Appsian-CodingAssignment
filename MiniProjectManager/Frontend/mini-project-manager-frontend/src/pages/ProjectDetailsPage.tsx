@@ -44,7 +44,7 @@ const ProjectDetailsPage: React.FC = () => {
     try {
       if (projectId) {
         if (editingTask) {
-          const updatedTask = await updateTask(
+          await updateTask(
             projectId,
             editingTask.id.toString(),
             taskData as UpdateTaskDto
